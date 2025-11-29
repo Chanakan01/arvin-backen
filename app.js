@@ -1,30 +1,30 @@
+// app.js (ระดับ root)
+// 👉 ถ้าในไฟล์คุณใช้ require อยู่ บอกฉันอีกทีได้ เดี๋ยวแปลงให้เป็น CommonJS ให้
 import express from "express";
-import mongoose from "mongoose";
+import dotenv from "dotenv";
 import cors from "cors";
+import { connectDB } from "./backend/config/db.js";
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB – (เดี๋ยวคุณใส่จริงใน Render)
-mongoose.connect(process.env.MONGO_URI || "")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log("MongoDB error: ", err.message));
-
-// ทดสอบ API
+// 🧠 ทดสอบ endpoint ง่าย ๆ
 app.get("/", (req, res) => {
-  res.json({ message: "Arvin Backend API is running!" });
+  res.send("Arvin Backend is running 🚀");
 });
 
-// ล็อกอินแอดมินเบื้องต้น (ยังไม่แฮช)
-app.post("/api/admin/login", (req, res) => {
-  const { username, password } = req.body;
-  if (username === "admin" && password === "Aa112233.") {
-    return res.json({ success: true, token: "TEST-TOKEN" });
-  }
-  res.status(401).json({ success: false, message: "ข้อมูลไม่ถูกต้อง" });
-});
+// TODO: ตรงนี้ภายหลังเราจะ import routes ต่าง ๆ เช่น userRoutes, adminRoutes
+// import userRoutes from "./backend/routes/userRoutes.js";
+// app.use("/api/users", userRoutes);
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+// ⭐ เรียกต่อ MongoDB แล้วค่อยเริ่มฟังพอร์ต
+const PORT = process.env.PORT || 5000;
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+  });
 });
